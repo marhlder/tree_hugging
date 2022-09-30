@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -56,7 +57,7 @@ int main() {
             auto none = stoi(column_item);
 
             auto row = tuple<int, string, string, float, int>(id, game, behaviour, play_purchase, none);
-            node_data<int, string, string, float, int> data(row);
+            auto data = std::make_shared<node_data<int, string, string, float, int>>( row);
             tree.insert(data);
 
         } catch (std::invalid_argument&) {
@@ -72,9 +73,30 @@ int main() {
         line_count++;
     }
 
-    /*auto traveller = [] (const node_data<int, string, string, float, int>&){
+    shared_ptr<node_data<int, basic_string<char>, basic_string<char>, float, int>> current_node_data;
+
+    function<void(shared_ptr<node_data<int, string, string, float, int>>)> traveller = [&current_node_data] (const shared_ptr< node_data<int, string, string, float, int>>& nodeData){
+
+        if (current_node_data == nullptr)
+        {
+            current_node_data = nodeData;
+        }
+        else if (*current_node_data == *nodeData)
+        {
+            current_node_data->pretty_print();
+            cout << "==";
+            nodeData->pretty_print();
+            cout << endl;
+        }
+        else
+        {
+            current_node_data = nodeData;
+        }
+
+
     };
-    */
+
+    tree.traverse(traveller);
 
     cout << std::flush;
 
